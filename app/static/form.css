@@ -1,0 +1,28 @@
+body{
+    background: #6250bc;
+}
+.box3{
+    width: 50%;
+    height: 100%;
+    background-color: #6250bc;
+    color: black;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+.box4{
+    width: 50%;
+    height: 110%;
+    background-color: white;
+    color: black;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+.box4 img{
+    animation: float 6s ease-in-out infinite;
+    width: 70%;
+    height: 70%;
+}

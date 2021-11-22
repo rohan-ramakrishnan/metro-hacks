@@ -1,0 +1,45 @@
+<!--
+
+<form action="{{ url_for('login') }}" method="post">
+    <input name="username">
+    <label for="username">username</label>
+    <label for="pass"></label>
+    <input type="password" placeholder="Enter password" name="password" required>
+    <button type="submit">Login</button>
+</form> -->
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/form.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="box3">
+                {% if msg %}
+                    <h1>{{ msg }}</h1>
+                {% endif %}
+                <form action="{{ url_for('login') }}" method="post" class="form">
+                    <h1>LOGIN</h1>
+                    <br>
+                    <input name="username" placeholder="username" required>
+                    <br>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <br>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            <div class="box4">
+                <img
+                    src="https://cdn.discordapp.com/attachments/911439995762540564/912067211017977866/Untitled_design_4.svg">
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

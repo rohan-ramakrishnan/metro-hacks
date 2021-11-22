@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<body style="background-color: lightgray;">
+<div class="container">
+  <form action="{{ url_for('submit_essay') }}" method="post">
+      <input type="text" style="background-color: white; padding: 7px; margin-bottom: 5px; border: 1px solid gray; border-radius: 25px; width:60vw; text-align: center;" name="title" placeholder="Title" required>
+      <br>
+      <br>
+      <textarea name="essay" class="essay" placeholder="Let's Write" style="width:78vw;" required></textarea>
+      <br>
+      <select name="dropdown" style="padding: 10px; border-radius: 25px; outline: none; margin-bottom: 10px; " required>
+        <option value="argumentative">Argumentative</option>
+        <option value="rhetorical">Rhetorical</option>
+        <option value="narrative">Narrative</option>
+        <option value="rhetorical">Rhetorical</option>
+        <option value="expository">Expository</option>
+      </select>
+      <br>
+      <button type="submit" style="padding: 10px; border-radius: 25px; outline: none; background-color: white; border: 1px solid gray;">Submit</button>
+  </form>
+</div>
+</body>
+{% endblock %}

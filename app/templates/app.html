@@ -1,0 +1,465 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body>
+    <canvas style="background-color: lightgray; z-index: 0; position: absolute; opacity: 100%;" id="nokey" width="100px" height="100px">
+    </canvas>
+    <div class="container" style="overflow: auto; z-index: 1;">
+        <div class="card" style="background-color: white; z-index: 1;">
+            <img style="background-color: white; width: 50px; height: 50px; border-radius: 100px; border: 2px solid #E66677; padding: 15px; z-index: 1;"
+                src="https://avatars.dicebear.com/api/bottts/{{session['username']}}.svg" alt="" />
+            <br>
+            <div class="stats" style="background-color: white; z-index: 1; width:30vw;">
+                <h3 style="margin-left: 5px;">Welcome {{ session['username'] }} | Points: {{ users[2] }}</h3>
+            </div>
+        </div>
+        <br>
+        <p style="z-index: 1;">Essays For You</p>
+        <hr style="width: 10%; border: 1px solid black; z-index: 1;">
+        <br>
+        <div class="overflow" style="z-index: 1; overflow-x: auto; overflow-y: hidden; height: 25%; display: flex; width: 100%; align-items: center; justify-content: center;">
+            {% for m in essays %}
+
+            <div style="z-index: 1; background-color: white; border: 2px solid black; padding: 20px; border-radius: 25px; width: 100px; margin: 10px; height: 80px;" >
+                <a href="{{ url_for('review_essay', essayid=m[0]) }}">{{m[3]}}</a>
+                {{m[2]}}
+                <p>by {{ m[5] }}</p>
+                <!-- <p>⭐ {{ m[6] }}</p> -->
+                <a href="{{ url_for('review_essay', essayid=m[0]) }}">See Details</a>
+            </div>
+            <br>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        /*--------------------
+    Vars
+    --------------------*/
+            const deg = (a) => Math.PI / 180 * a
+            const rand = (v1, v2) => Math.floor(v1 + Math.random() * (v2 - v1))
+            const opt = {
+                particles: window.width / 500 ? 1000 : 500,
+                noiseScale: 0.009,
+                angle: Math.PI / 180 * -90,
+                h1: rand(0, 360),
+                h2: rand(0, 360),
+                s1: rand(20, 90),
+                s2: rand(20, 90),
+                l1: rand(30, 80),
+                l2: rand(30, 80),
+                strokeWeight: 1.2,
+                tail: 82,
+            }
+            const Particles = []
+            let time = 0
+            document.body.addEventListener('click', () => {
+                opt.h1 = rand(0, 360)
+                opt.h2 = rand(0, 360)
+                opt.s1 = rand(20, 90)
+                opt.s2 = rand(20, 90)
+                opt.l1 = rand(30, 80)
+                opt.l2 = rand(30, 80)
+                opt.angle += deg(random(60, 60)) * (Math.random() > .5 ? 1 : -1)
+
+                for (let p of Particles) {
+                    p.randomize()
+                }
+            })
+
+
+            /*--------------------
+            Particle
+            --------------------*/
+            class Particle {
+                constructor(x, y) {
+                    this.x = x
+                    this.y = y
+                    this.lx = x
+                    this.ly = y
+                    this.vx = 0
+                    this.vy = 0
+                    this.ax = 0
+                    this.ay = 0
+                    this.hueSemen = Math.random()
+                    this.hue = this.hueSemen > .5 ? 20 + opt.h1 : 20 + opt.h2
+                    this.sat = this.hueSemen > .5 ? opt.s1 : opt.s2
+                    this.light = this.hueSemen > .5 ? opt.l1 : opt.l2
+                    this.maxSpeed = this.hueSemen > .5 ? 3 : 2
+                }
+
+                randomize() {
+                    this.hueSemen = Math.random()
+                    this.hue = this.hueSemen > .5 ? 20 + opt.h1 : 20 + opt.h2
+                    this.sat = this.hueSemen > .5 ? opt.s1 : opt.s2
+                    this.light = this.hueSemen > .5 ? opt.l1 : opt.l2
+                    this.maxSpeed = this.hueSemen > .5 ? 3 : 2
+                }
+
+                update() {
+                    this.follow()
+
+                    this.vx += this.ax
+                    this.vy += this.ay
+
+                    var p = Math.sqrt(this.vx * this.vx + this.vy * this.vy)
+                    var a = Math.atan2(this.vy, this.vx)
+                    var m = Math.min(this.maxSpeed, p)
+                    this.vx = Math.cos(a) * m
+                    this.vy = Math.sin(a) * m
+
+                    this.x += this.vx
+                    this.y += this.vy
+                    this.ax = 0
+                    this.ay = 0
+
+                    this.edges()
+                }
+
+                follow() {
+                    let angle = (noise(this.x * opt.noiseScale, this.y * opt.noiseScale, time * opt.noiseScale)) * Math.PI * 0.5 + opt.angle
+
+                    this.ax += Math.cos(angle)
+                    this.ay += Math.sin(angle)
+
+                }
+
+                updatePrev() {
+                    this.lx = this.x
+                    this.ly = this.y
+                }
+
+                edges() {
+                    if (this.x < 0) {
+                        this.x = width
+                        this.updatePrev()
+                    }
+                    if (this.x > width) {
+                        this.x = 0
+                        this.updatePrev()
+                    }
+                    if (this.y < 0) {
+                        this.y = height
+                        this.updatePrev()
+                    }
+                    if (this.y > height) {
+                        this.y = 0
+                        this.updatePrev()
+                    }
+                }
+
+                render() {
+                    stroke(`hsla(${this.hue}, ${this.sat}%, ${this.light}%, .5)`)
+                    line(this.x, this.y, this.lx, this.ly)
+                    this.updatePrev()
+                }
+            }
+
+
+            /*--------------------
+            Setup
+            --------------------*/
+            function setup() {
+                createCanvas(windowWidth, windowHeight)
+                for (let i = 0; i < opt.particles; i++) {
+                    Particles.push(new Particle(Math.random() * width, Math.random() * height))
+                }
+                strokeWeight(opt.strokeWeight)
+            }
+
+
+            /*--------------------
+            Draw
+            --------------------*/
+            function draw() {
+                time++
+                background(0, 100 - opt.tail)
+
+                for (let p of Particles) {
+                    p.update()
+                    p.render()
+                }
+            }
+
+
+            /*--------------------
+            Resize
+            --------------------*/
+            function windowResized() {
+                resizeCanvas(windowWidth, windowHeight)
+            }
+            var canvas = document.getElementById('nokey'),
+                can_w = parseInt(canvas.getAttribute('width')),
+                can_h = parseInt(canvas.getAttribute('height')),
+                ctx = canvas.getContext('2d');
+
+            // console.log(typeof can_w);
+            var BALL_NUM = 30
+
+            var ball = {
+                x: 0,
+                y: 0,
+                vx: 0,
+                vy: 0,
+                r: 0,
+                alpha: 1,
+                phase: 0
+            },
+                ball_color = {
+                    r: 207,
+                    g: 255,
+                    b: 4
+                },
+                R = 2,
+                balls = [],
+                alpha_f = 0.03,
+                alpha_phase = 0,
+
+                // Line
+                link_line_width = 0.8,
+                dis_limit = 260,
+                add_mouse_point = true,
+                mouse_in = false,
+                mouse_ball = {
+                    x: 0,
+                    y: 0,
+                    vx: 0,
+                    vy: 0,
+                    r: 0,
+                    type: 'mouse'
+                };
+
+            // Random speed
+            function getRandomSpeed(pos) {
+                var min = -1,
+                    max = 1;
+                switch (pos) {
+                    case 'top':
+                        return [randomNumFrom(min, max), randomNumFrom(0.1, max)];
+                        break;
+                    case 'right':
+                        return [randomNumFrom(min, -0.1), randomNumFrom(min, max)];
+                        break;
+                    case 'bottom':
+                        return [randomNumFrom(min, max), randomNumFrom(min, -0.1)];
+                        break;
+                    case 'left':
+                        return [randomNumFrom(0.1, max), randomNumFrom(min, max)];
+                        break;
+                    default:
+                        return;
+                        break;
+                }
+            }
+            function randomArrayItem(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+            function randomNumFrom(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+            console.log(randomNumFrom(0, 10));
+            // Random Ball
+            function getRandomBall() {
+                var pos = randomArrayItem(['top', 'right', 'bottom', 'left']);
+                switch (pos) {
+                    case 'top':
+                        return {
+                            x: randomSidePos(can_w),
+                            y: -R,
+                            vx: getRandomSpeed('top')[0],
+                            vy: getRandomSpeed('top')[1],
+                            r: R,
+                            alpha: 1,
+                            phase: randomNumFrom(0, 10)
+                        }
+                        break;
+                    case 'right':
+                        return {
+                            x: can_w + R,
+                            y: randomSidePos(can_h),
+                            vx: getRandomSpeed('right')[0],
+                            vy: getRandomSpeed('right')[1],
+                            r: R,
+                            alpha: 1,
+                            phase: randomNumFrom(0, 10)
+                        }
+                        break;
+                    case 'bottom':
+                        return {
+                            x: randomSidePos(can_w),
+                            y: can_h + R,
+                            vx: getRandomSpeed('bottom')[0],
+                            vy: getRandomSpeed('bottom')[1],
+                            r: R,
+                            alpha: 1,
+                            phase: randomNumFrom(0, 10)
+                        }
+                        break;
+                    case 'left':
+                        return {
+                            x: -R,
+                            y: randomSidePos(can_h),
+                            vx: getRandomSpeed('left')[0],
+                            vy: getRandomSpeed('left')[1],
+                            r: R,
+                            alpha: 1,
+                            phase: randomNumFrom(0, 10)
+                        }
+                        break;
+                }
+            }
+            function randomSidePos(length) {
+                return Math.ceil(Math.random() * length);
+            }
+
+            // Draw Ball
+            function renderBalls() {
+                Array.prototype.forEach.call(balls, function (b) {
+                    if (!b.hasOwnProperty('type')) {
+                        ctx.fillStyle = 'rgba(' + ball_color.r + ',' + ball_color.g + ',' + ball_color.b + ',' + b.alpha + ')';
+                        ctx.beginPath();
+                        ctx.arc(b.x, b.y, R, 0, Math.PI * 2, true);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                });
+            }
+
+            // Update balls
+            function updateBalls() {
+                var new_balls = [];
+                Array.prototype.forEach.call(balls, function (b) {
+                    b.x += b.vx;
+                    b.y += b.vy;
+
+                    if (b.x > -(50) && b.x < (can_w + 50) && b.y > -(50) && b.y < (can_h + 50)) {
+                        new_balls.push(b);
+                    }
+
+                    // alpha change
+                    b.phase += alpha_f;
+                    b.alpha = Math.abs(Math.cos(b.phase));
+                    // console.log(b.alpha);
+                });
+
+                balls = new_balls.slice(0);
+            }
+
+            // loop alpha
+            function loopAlphaInf() {
+
+            }
+
+            // Draw lines
+            function renderLines() {
+                var fraction, alpha;
+                for (var i = 0; i < balls.length; i++) {
+                    for (var j = i + 1; j < balls.length; j++) {
+
+                        fraction = getDisOf(balls[i], balls[j]) / dis_limit;
+
+                        if (fraction < 1) {
+                            alpha = (1 - fraction).toString();
+
+                            ctx.strokeStyle = 'rgba(150,150,150,' + alpha + ')';
+                            ctx.lineWidth = link_line_width;
+
+                            ctx.beginPath();
+                            ctx.moveTo(balls[i].x, balls[i].y);
+                            ctx.lineTo(balls[j].x, balls[j].y);
+                            ctx.stroke();
+                            ctx.closePath();
+                        }
+                    }
+                }
+            }
+
+            // calculate distance between two points
+            function getDisOf(b1, b2) {
+                var delta_x = Math.abs(b1.x - b2.x),
+                    delta_y = Math.abs(b1.y - b2.y);
+
+                return Math.sqrt(delta_x * delta_x + delta_y * delta_y);
+            }
+
+            // add balls if there a little balls
+            function addBallIfy() {
+                if (balls.length < BALL_NUM) {
+                    balls.push(getRandomBall());
+                }
+            }
+
+            // Render
+            function render() {
+                ctx.clearRect(0, 0, can_w, can_h);
+
+                renderBalls();
+
+                renderLines();
+
+                updateBalls();
+
+                addBallIfy();
+
+                window.requestAnimationFrame(render);
+            }
+
+            // Init Balls
+            function initBalls(num) {
+                for (var i = 1; i <= num; i++) {
+                    balls.push({
+                        x: randomSidePos(can_w),
+                        y: randomSidePos(can_h),
+                        vx: getRandomSpeed('top')[0],
+                        vy: getRandomSpeed('top')[1],
+                        r: R,
+                        alpha: 1,
+                        phase: randomNumFrom(0, 10)
+                    });
+                }
+            }
+            // Init Canvas
+            function initCanvas() {
+                canvas.setAttribute('width', window.innerWidth);
+                canvas.setAttribute('height', window.innerHeight);
+
+                can_w = parseInt(canvas.getAttribute('width'));
+                can_h = parseInt(canvas.getAttribute('height'));
+            }
+            window.addEventListener('resize', function (e) {
+                console.log('Window Resize...');
+                initCanvas();
+            });
+
+            function goMovie() {
+                initCanvas();
+                initBalls(BALL_NUM);
+                window.requestAnimationFrame(render);
+            }
+            goMovie();
+
+            // Mouse effect
+            canvas.addEventListener('mouseenter', function () {
+                console.log('mouseenter');
+                mouse_in = true;
+                balls.push(mouse_ball);
+            });
+            canvas.addEventListener('mouseleave', function () {
+                console.log('mouseleave');
+                mouse_in = false;
+                var new_balls = [];
+                Array.prototype.forEach.call(balls, function (b) {
+                    if (!b.hasOwnProperty('type')) {
+                        new_balls.push(b);
+                    }
+                });
+                balls = new_balls.slice(0);
+            });
+            canvas.addEventListener('mousemove', function (e) {
+                var e = e || window.event;
+                mouse_ball.x = e.pageX;
+                mouse_ball.y = e.pageY;
+                // console.log(mouse_ball);
+            });
+    </script>
+</body>
+{% endblock %}

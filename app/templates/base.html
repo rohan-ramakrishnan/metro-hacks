@@ -1,0 +1,27 @@
+<!-- NAVBAR -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../static/style.css">
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="https://img.icons8.com/ios-glyphs/30/000000/paper.png" type="image/x-icon">
+    </head>
+    <ul>
+        <li><a href="{{ url_for('_app') }}" style="font-size: 30px;">CRITIQUE.LY</a></li>
+        {% if session['loggedIn'] == True %}
+            <li><a href="{{ url_for('submit_essay') }}">Submit Your Essay</a></li>
+            <div class="dropdown">
+                <button class="dropbtn"><strong>{{ session['username'] }}</strong></button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('logout') }}"><strong>Logout</strong></a>
+                </div>
+            </div>
+        {% else %}
+            <li style="float:right; padding-left: 5px;"><a href="{{ url_for('login') }}">LOGIN</a></li>
+            <li style="float:right; padding-left: 5px;"><a href="{{ url_for('register') }}">SIGNUP</a></li>
+        {% endif %}
+    </ul>
+    </html>
+</html>
+{% block content %}
+{% endblock %}
